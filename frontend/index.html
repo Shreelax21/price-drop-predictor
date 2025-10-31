@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛍️ Smart Price Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #f9f9ff);
+      margin: 0;
+      padding: 0;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(90deg, #007bff, #00b4d8);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      font-size: 24px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    nav a {
+      margin-left: 25px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      opacity: 0.8;
+      transform: translateY(-2px);
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 800px;
+      margin: 60px auto;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    .container h2 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    .container p {
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    /* ===== INPUT SECTION ===== */
+    .search-box {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+      transition: 0.4s;
+    }
+
+    .search-box:hover {
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    input[type="text"] {
+      width: 75%;
+      padding: 14px 18px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 10px rgba(0,123,255,0.3);
+    }
+
+    button {
+      background: linear-gradient(135deg, #007bff, #00b4d8);
+      color: white;
+      border: none;
+      padding: 14px 25px;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #0069d9, #0096c7);
+      transform: scale(1.05);
+    }
+
+    /* ===== RESULT CARD ===== */
+    .result-card {
+      background: white;
+      border-radius: 16px;
+      margin-top: 40px;
+      padding: 25px;
+      text-align: left;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      display: none;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .result-card h3 {
+      margin-top: 0;
+      color: #007bff;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: 600;
+      color: #28a745;
+    }
+
+    .deal-score {
+      font-size: 36px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      background: #111;
+      color: #ccc;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🛍️ Smart Price Tracker</h1>
+    <nav>
+      <a href="#">Hot Deals</a>
+      <a href="#">Price Alert</a>
+      <a href="#">Refer & Earn</a>
+      <a href="#">Add-on</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Track Flipkart Prices Instantly 🔎</h2>
+    <p>Get live product insights & predict price drops before anyone else</p>
+
+    <div class="search-box">
+      <input type="text" id="productUrl" placeholder="🔗 Paste Flipkart product link here..." />
+      <button onclick="analyzeProduct()">Analyze</button>
+    </div>
+
+    <div id="resultCard" class="result-card"></div>
+  </div>
+
+  <footer>
+    © 2025 Smart Price Tracker | Built with 💙 by <b>Shreelakshmi Hegde</b>
+  </footer>
+
+  <script>
+    async function analyzeProduct() {
+      const url = document.getElementById("productUrl").value.trim();
+      const resultCard = document.getElementById("resultCard");
+
+      if (!url) {
+        alert("Please enter a Flipkart product URL!");
+        return;
+      }
+
+      resultCard.style.display = "block";
+      resultCard.innerHTML = `
+        <div style="text-align:center;">
+          <div class="loading-spinner"></div>
+          <p>Analyzing product... please wait 🔍</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/products/predict_drop/?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          const dealScore = Math.round(data.predicted_drop_probability);
+          const color = dealScore > 60 ? "#28a745" : dealScore > 30 ? "#ffc107" : "#dc3545";
+
+          resultCard.innerHTML = `
+            <h3>📦 Product Analysis</h3>
+            <p><b>Current Price:</b> <span class="price">₹${data.current_price.toFixed(2)}</span></p>
+            <p><b>Prediction:</b> ${data.prediction_comment}</p>
+            <p><b>Drop Probability:</b> ${dealScore}%</p>
+            <div class="deal-score" style="color:${color};">Deal Score: ${dealScore}</div>
+          `;
+        } else {
+          resultCard.innerHTML = "⚠️ Failed to fetch analysis. Please try again.";
+        }
+      } catch (error) {
+        resultCard.innerHTML = "❌ Error connecting to backend. Make sure your FastAPI server is running.";
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
